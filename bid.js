@@ -1,7 +1,17 @@
 const express = require('express');
-const router = express.Router();
+const router = express();
+const multer = require('multer');
+const fs = require('fs');
 const mongoose = require('mongoose');
-// const User = require( '../../models/User' );
+
+let temp1;
+let temp2;
+
+// const orderSchema = {
+//   data: Object
+// };
+
+// const Order = mongoose.model('Order', orderSchema);
 
 const Insta = require('instamojo-nodejs');
 const url = require('url');
@@ -9,6 +19,8 @@ const url = require('url');
 // /api/bid/pay
 router.post('/pay', (req, res) => {
   const body = JSON.parse(req.body);
+  temp1 = body;
+
   Insta.setKeys('test_c496eefc2cceece396905f07440', 'test_b7781fba1a5e484e80cde59e36b');
 
   const data = new Insta.PaymentData();
@@ -27,13 +39,10 @@ router.post('/pay', (req, res) => {
 
   Insta.createPayment(data, function(error, response) {
     if (error) {
-      // some error
+      console.log(error);
     } else {
-      // Payment redirection link at response.payment_request.longurl
       const responseData = JSON.parse(response);
       const redirectUrl = responseData.payment_request.longurl;
-      // console.log( redirectUrl );
-
       res.send(redirectUrl);
     }
   });
@@ -48,21 +57,26 @@ router.get('/callback/', (req, res) => {
   let url_parts = url.parse(req.url, true),
     responseData = url_parts.query;
 
-  // if ( responseData.payment_id ) {
-  //  let userId = responseData.user_id;
+  if (responseData.payment_id) {
+    temp2 = responseData;
+    const order = { ...temp1, ...temp2 };
 
-  //  // Save the info that user has purchased the bid.
-  //  const bidData = {};
-  //  bidData.package = 'Bid100';
-  //  bidData.bidCountInPack = '10';
+    
+    // const newOrder = new Order({
+    //   data: order
+    // });
+    // newOrder.save(function(err) {
+    //   if (err) {
+    //     console.log(err);
+    //   } else {
+    //     res.send('new user created');
+    //   }
+    // });
 
-  // User.findOneAndUpdate( { _id: userId }, { $set: bidData }, { new: true } )
-  //  .then( ( user ) => res.json( user ) )
-  //  .catch( ( errors ) => res.json( errors ) );
 
-  // Redirect the user to payment complete page.
-  return res.redirect('http://167.71.233.213/payment-complete');
-  // }
+    // console.log('--order->', order);
+    return res.redirect('http://157.245.101.109/payment-complete');
+  }
 });
 
 // We export the router so that the server.js file can pick it up
