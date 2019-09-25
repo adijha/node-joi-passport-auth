@@ -102,7 +102,7 @@ const url = require('url');
 // /api/bid/pay
 router.post('/pay', (req, res) => {
   const body = JSON.parse(req.body);
-  console.log('/pay body', body);
+  console.log('/pay headers-->', req.headers);
   temp1 = body;
 
   Insta.setKeys('test_c496eefc2cceece396905f07440', 'test_b7781fba1a5e484e80cde59e36b');
